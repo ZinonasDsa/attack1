@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Security Check</title>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+<script>
+window.onload = function () {
+
+    Swal.fire({
+        icon: 'error',
+        title: 'YOU ARE HACKED!',
+        text: 'Your device has been compromised!',
+        confirmButtonText: 'OK',
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    }).then(() => {
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Just kidding 😄',
+            text: 'This was only a security awareness demonstration.',
+            confirmButtonText: 'Close'
+        });
+
+    });
+
+};
+</script>
+
+</body>
+</html>
