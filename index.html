@@ -1,48 +1,587 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Security Check</title>
+    <title>Έλεγχος Ασφαλείας</title>
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
         body {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             background: #000;
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body.warning {
+            animation: flashBackground 0.35s infinite alternate;
+        }
+
+        @keyframes flashBackground {
+            from {
+                background: #000;
+            }
+
+            to {
+                background: #350000;
+            }
+        }
+
+        #startScreen {
+            position: fixed;
+            inset: 0;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            background: black;
+            color: white;
+
+            text-align: center;
+            padding: 30px;
+        }
+
+        #startScreen h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        #startScreen p {
+            font-size: 17px;
+            color: #bbb;
+            max-width: 500px;
+        }
+
+        #startButton {
+            margin-top: 25px;
+
+            padding: 17px 45px;
+
+            background: #b00000;
+            color: white;
+
+            border: none;
+            border-radius: 8px;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow: 0 0 20px red;
+        }
+
+        #startButton:active {
+            transform: scale(0.96);
+        }
+
+        #terminal {
+            display: none;
+
+            position: fixed;
+            inset: 0;
+
+            background: black;
+            color: #00ff41;
+
+            padding: 25px;
+
+            font-family: monospace;
+
+            font-size: 16px;
+
+            overflow: hidden;
+        }
+
+        #terminalText {
+            white-space: pre-line;
+        }
+
+        .red {
+            color: red;
+        }
+
+        .blink {
+            animation: blink 0.5s infinite alternate;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0.3;
+            }
+        }
+
+        .swal2-popup {
+            background: #050505 !important;
+
+            border: 3px solid red !important;
+
+            box-shadow:
+                0 0 20px red,
+                0 0 50px rgba(255, 0, 0, 0.7) !important;
+        }
+
+        .swal2-title {
+            color: red !important;
+
+            font-size: 30px !important;
+
+            text-shadow: 0 0 10px red;
+        }
+
+        .swal2-html-container {
+            color: white !important;
+            font-size: 18px !important;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+
+            background: #222;
+
+            margin-top: 20px;
+
+            border: 1px solid red;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+
+            background: red;
+
+            transition: width 0.15s linear;
+        }
+
+        #progressText {
+            margin-top: 10px;
+
+            color: red;
+
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
 
-<script>
-window.onload = function () {
+    <!-- Scary Sound -->
+    <audio id="scarySound" loop>
+        <source src="scary.mp3" type="audio/mpeg">
+    </audio>
 
-    Swal.fire({
-        icon: 'error',
-        title: 'YOU ARE HACKED!',
-        text: 'Your device has been compromised!',
-        confirmButtonText: 'OK',
-        allowOutsideClick: false,
-        allowEscapeKey: false
-    }).then(() => {
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Just kidding 😄',
-            text: 'This was only a security awareness demonstration.',
-            confirmButtonText: 'Close'
+    <!-- Αρχική οθόνη -->
+    <div id="startScreen">
+
+        <h1>⚠️ ΕΛΕΓΧΟΣ ΑΣΦΑΛΕΙΑΣ</h1>
+
+        <p>
+            Πατήστε συνέχεια για να ολοκληρωθεί
+            η διαδικασία επαλήθευσης.
+        </p>
+
+        <button id="startButton">
+            ΣΥΝΕΧΕΙΑ
+        </button>
+
+    </div>
+
+
+    <!-- Fake terminal -->
+    <div id="terminal">
+
+        <div id="terminalText"></div>
+
+    </div>
+
+
+    <script>
+
+        const startButton =
+            document.getElementById("startButton");
+
+        const startScreen =
+            document.getElementById("startScreen");
+
+        const terminal =
+            document.getElementById("terminal");
+
+        const terminalText =
+            document.getElementById("terminalText");
+
+        const scarySound =
+            document.getElementById("scarySound");
+
+
+        startButton.addEventListener("click", async function () {
+
+            // --------------------------------
+            // Κρύβουμε αρχική οθόνη
+            // --------------------------------
+
+            startScreen.style.display = "none";
+
+
+            // --------------------------------
+            // Ξεκινά η scary μουσική
+            // --------------------------------
+
+            scarySound.volume = 0.85;
+
+            scarySound.play().catch(() => {
+                console.log("Το audio μπλοκαρίστηκε.");
+            });
+
+
+            // --------------------------------
+            // Δόνηση κινητού
+            // --------------------------------
+
+            if ("vibrate" in navigator) {
+
+                navigator.vibrate([
+                    500,
+                    150,
+                    500,
+                    150,
+                    800,
+                    200,
+                    1000
+                ]);
+
+            }
+
+
+            // --------------------------------
+            // Flashing background
+            // --------------------------------
+
+            document.body.classList.add("warning");
+
+
+            // --------------------------------
+            // Fake Terminal
+            // --------------------------------
+
+            terminal.style.display = "block";
+
+            const messages = [
+
+                "[SYSTEM] Έναρξη ελέγχου συσκευής...",
+
+                "[NETWORK] Ανίχνευση σύνδεσης...",
+
+                "[DEVICE] Αναγνώριση συσκευής...",
+
+                "[SECURITY] Έλεγχος προστασίας...",
+
+                "[WARNING] Εντοπίστηκε ύποπτη δραστηριότητα...",
+
+                "[WARNING] ΜΗ ΕΞΟΥΣΙΟΔΟΤΗΜΕΝΗ ΠΡΟΣΒΑΣΗ",
+
+                "[SYSTEM] Φόρτωση δεδομένων...",
+
+                "[ALERT] SECURITY BREACH DETECTED"
+
+            ];
+
+
+            for (let i = 0; i < messages.length; i++) {
+
+                terminalText.innerHTML +=
+                    messages[i] + "\n\n";
+
+                await sleep(450);
+
+            }
+
+
+            await sleep(500);
+
+
+            terminal.style.display = "none";
+
+
+            // --------------------------------
+            // SweetAlert
+            // --------------------------------
+
+            Swal.fire({
+
+                icon: "error",
+
+                title: "⚠️ Η ΣΥΣΚΕΥΗ ΣΑΣ ΠΑΡΑΒΙΑΣΤΗΚΕ",
+
+                html: `
+
+                    <div style="font-size:24px;
+                    color:red;
+                    font-weight:bold;"
+                    class="blink">
+
+                        YOU HAVE BEEN HACKED
+
+                    </div>
+
+                    <br>
+
+                    Εντοπίστηκε
+                    <b>μη εξουσιοδοτημένη πρόσβαση</b>
+                    στη συσκευή σας.
+
+                    <br><br>
+
+                    <div style="
+                    text-align:left;
+                    background:#111;
+                    padding:15px;
+                    border:1px solid #550000;
+                    font-family:monospace;
+                    ">
+
+                        ⚠ Σύνδεση συσκευής:
+                        <span style="color:red;">
+                            ΕΝΤΟΠΙΣΤΗΚΕ
+                        </span>
+
+                        <br><br>
+
+                        ⚠ Δίκτυο:
+                        <span style="color:red;">
+                            ΕΝΤΟΠΙΣΤΗΚΕ
+                        </span>
+
+                        <br><br>
+
+                        ⚠ Κατάσταση ασφαλείας:
+                        <span style="color:red;">
+                            ΚΡΙΣΙΜΗ
+                        </span>
+
+                        <br><br>
+
+                        ⚠ Πρόσβαση:
+                        <span style="color:red;">
+                            ΕΝΕΡΓΗ
+                        </span>
+
+                    </div>
+
+                    <br>
+
+                    <b>
+                        ΜΗΝ ΚΛΕΙΣΕΤΕ ΤΗ ΣΕΛΙΔΑ
+                    </b>
+
+                    <div class="progress-container">
+
+                        <div id="progressBar"></div>
+
+                    </div>
+
+                    <div id="progressText">
+                        0%
+                    </div>
+
+                `,
+
+                showConfirmButton: false,
+
+                allowOutsideClick: false,
+
+                allowEscapeKey: false,
+
+                didOpen: () => {
+
+                    startFakeProgress();
+
+                }
+
+            });
+
         });
 
-    });
 
-};
-</script>
+
+        // ==========================================
+        // Fake Progress Bar
+        // ==========================================
+
+        function startFakeProgress() {
+
+            let progress = 0;
+
+            const bar =
+                document.getElementById("progressBar");
+
+            const text =
+                document.getElementById("progressText");
+
+
+            const interval =
+                setInterval(() => {
+
+                    progress +=
+                        Math.floor(Math.random() * 4) + 1;
+
+
+                    if (progress >= 100) {
+
+                        progress = 100;
+
+                        clearInterval(interval);
+
+
+                        bar.style.width =
+                            progress + "%";
+
+                        text.innerText =
+                            progress + "%";
+
+
+                        setTimeout(showReveal, 1000);
+
+                        return;
+
+                    }
+
+
+                    bar.style.width =
+                        progress + "%";
+
+                    text.innerText =
+                        progress + "%";
+
+
+                    // μικρές δονήσεις
+                    if (
+                        progress === 30 ||
+                        progress === 60 ||
+                        progress === 85
+                    ) {
+
+                        navigator.vibrate?.([
+                            300,
+                            100,
+                            300
+                        ]);
+
+                    }
+
+
+                }, 150);
+
+        }
+
+
+
+        // ==========================================
+        // Reveal
+        // ==========================================
+
+        function showReveal() {
+
+            navigator.vibrate?.(0);
+
+            scarySound.pause();
+
+            scarySound.currentTime = 0;
+
+            document.body.classList.remove("warning");
+
+
+            Swal.fire({
+
+                icon: "success",
+
+                title: "😄 ΧΑΛΑΡΩΣΕ!",
+
+                html: `
+
+                    <b>
+                        Δεν έγινε καμία παραβίαση
+                        της συσκευής σου.
+                    </b>
+
+                    <br><br>
+
+                    Αυτή ήταν απλώς μία
+                    <b>προσομοίωση ασφάλειας</b>.
+
+                    <br><br>
+
+                    Σκοπός της είναι να δείξει
+                    πόσο εύκολα ένα άγνωστο
+                    <b>QR Code</b>
+                    μπορεί να σε οδηγήσει
+                    σε μία παραπλανητική ιστοσελίδα.
+
+                    <br><br>
+
+                    🔐 Δεν αποκτήθηκε πρόσβαση
+                    σε φωτογραφίες, κωδικούς
+                    ή προσωπικά δεδομένα.
+
+                    <br><br>
+
+                    <b>
+                        Να ελέγχεις πάντα τα QR Codes
+                        πριν ανοίξεις έναν σύνδεσμο.
+                    </b>
+
+                `,
+
+                confirmButtonText:
+                    "ΕΝΤΑΞΕΙ 😅",
+
+                confirmButtonColor:
+                    "#198754",
+
+                allowOutsideClick: false
+
+            });
+
+        }
+
+
+
+        // ==========================================
+        // Sleep helper
+        // ==========================================
+
+        function sleep(ms) {
+
+            return new Promise(
+                resolve =>
+                    setTimeout(resolve, ms)
+            );
+
+        }
+
+    </script>
 
 </body>
+
 </html>
